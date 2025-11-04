@@ -7,8 +7,8 @@ git add .
 # 3. Hacer el primer commit
 git commit -m "Primera versión del sistema de asignación"
 
-# 4. Conectar con GitHub (reemplaza TU-USUARIO con tu usuario de GitHub)
-git remote add origin https://github.com/TU-USUARIO/email-assignment-system.git
+# 4. Conectar con GitHub 
+git remote add origin https://github.com/daniirodj2006/email-assignment-system.git
 
 # 5. Cambiar a rama main
 git branch -M main
@@ -17,13 +17,6 @@ git branch -M main
 git push -u origin main
 ```
 
-📌 **Nota:** Reemplaza `TU-USUARIO` con tu nombre de usuario de GitHub
-
-**Te pedirá credenciales:**
-- Username: tu usuario de GitHub
-- Password: necesitas usar un **Personal Access Token** (no tu contraseña)
-
----
 
 ### **PASO 5: Crear Personal Access Token (si te lo pide)**
 

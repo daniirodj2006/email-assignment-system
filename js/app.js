@@ -180,23 +180,18 @@ function updateQueue() {
         return;
     }
     
-    // Si la cola está vacía o cambió la disponibilidad, reconstruir
-    const queueHasUnavailable = appState.queue.some(member => {
-        // Verificar si la persona sigue disponible según el día
-        const today = new Date();
-        const dayOfWeek = today.getDay();
-        
-        // Si no es Lunes y es Ali, no está disponible
-        if (dayOfWeek !== 1 && member === 'Ali') {
-            return true;
-        }
-        
-        // Verificar estado
-        return appState.teamStatus[member] !== 'presente';
-    });
+    // SIEMPRE reconstruir la cola con las personas disponibles
+    // Esto asegura que los cambios de estado se reflejen inmediatamente
+    appState.queue = [...available];
     
-    if (appState.queue.length === 0 || queueHasUnavailable) {
-        appState.queue = [...available];
+    // Si el índice actual está fuera de rango, reiniciar
+    if (appState.currentIndex >= appState.queue.length) {
+        appState.currentIndex = 0;
+    }
+    
+    // Verificar que la persona actual sigue disponible
+    const currentPerson = appState.queue[appState.currentIndex];
+    if (!currentPerson || appState.teamStatus[currentPerson] !== 'presente') {
         appState.currentIndex = 0;
     }
     
