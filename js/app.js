@@ -2,7 +2,7 @@
 // DATOS INICIALES DEL EQUIPO
 // ===================================
 const teamMembers = [
-    'Ali', 'Ale', 'Moni', 'Sofi', 'Steph', 'Dani', 'Jose'
+    'Moni', 'Ale', 'Jose', 'Sofi', 'Dani', 'Steph', 'Ali'
 ];
 
 const weekDays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
