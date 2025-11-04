@@ -1,0 +1,54 @@
+# 1. Inicializar Git en tu proyecto
+git init
+
+# 2. Agregar todos los archivos
+git add .
+
+# 3. Hacer el primer commit
+git commit -m "Primera versión del sistema de asignación"
+
+# 4. Conectar con GitHub (reemplaza TU-USUARIO con tu usuario de GitHub)
+git remote add origin https://github.com/TU-USUARIO/email-assignment-system.git
+
+# 5. Cambiar a rama main
+git branch -M main
+
+# 6. Subir todo a GitHub
+git push -u origin main
+```
+
+📌 **Nota:** Reemplaza `TU-USUARIO` con tu nombre de usuario de GitHub
+
+**Te pedirá credenciales:**
+- Username: tu usuario de GitHub
+- Password: necesitas usar un **Personal Access Token** (no tu contraseña)
+
+---
+
+### **PASO 5: Crear Personal Access Token (si te lo pide)**
+
+1. En GitHub: Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. **Generate new token (classic)**
+3. Dale un nombre: "VS Code Access"
+4. Marca: ✅ **repo** (todos los permisos de repo)
+5. **Generate token**
+6. **COPIA EL TOKEN** (no lo volverás a ver)
+7. Úsalo como password en VS Code
+
+---
+
+### **PASO 6: Activar GitHub Pages**
+
+1. En tu repositorio de GitHub, ve a **Settings**
+2. En el menú izquierdo: **Pages**
+3. En **Source**, selecciona: **main** branch
+4. Click **Save**
+5. ¡Espera 1-2 minutos!
+
+---
+
+### **PASO 7: Obtener tu URL**
+
+Tu sitio estará en:
+```
+https://TU-USUARIO.github.io/email-assignment-system/

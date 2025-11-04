@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Asignación de Correos</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="container">
+            <h1>📧 Sistema de Asignación de Correos</h1>
+            <p class="subtitle">Gestión inteligente de turnos del equipo</p>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="container">
+        
+        <!-- SECCIÓN 1: GENERADOR SEMANAL -->
+        <section class="card">
+            <div class="card-header">
+                <h2>📅 Asignación Semanal</h2>
+                <button id="generateWeek" class="btn-primary">Generar Semana</button>
+            </div>
+            <div class="week-grid" id="weekGrid">
+                <!-- Se llenará dinámicamente con JavaScript -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: SISTEMA DE TURNOS -->
+        <section class="card">
+            <div class="card-header">
+                <h2>🔄 Siguiente en Turno</h2>
+            </div>
+            <div class="queue-container">
+                <div class="current-person">
+                    <p class="label">Persona Actual:</p>
+                    <h3 id="currentPerson">-</h3>
+                </div>
+                <button id="nextBtn" class="btn-next">Siguiente ➜</button>
+                <div class="next-person">
+                    <p class="label">Próximo:</p>
+                    <h3 id="nextPerson">-</h3>
+                </div>
+            </div>
+            <div class="queue-list">
+                <h4>Orden de Turnos:</h4>
+                <ul id="queueList"></ul>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: GESTIÓN DE DISPONIBILIDAD -->
+        <section class="card">
+            <div class="card-header">
+                <h2>👥 Estado del Equipo</h2>
+            </div>
+            <div class="team-status" id="teamStatus">
+                <!-- Se llenará dinámicamente con JavaScript -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>Sistema de Gestión de Correos v1.0 | © 2025</p>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script src="js/app.js"></script>
+</body>
+</html>
