@@ -1,12 +1,8 @@
-// ========================================
-// 🔥 CONFIGURACIÓN DE FIREBASE
-// ========================================
 
-// Importar Firebase desde CDN
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
-// Tu configuración de Firebase
+
 const firebaseConfig = {
   apiKey: "AIzaSyCTwqp83O1npnzTGXKSVrvqFhcX2OUsAZM",
   authDomain: "email-asignacion.firebaseapp.com",
@@ -21,13 +17,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// ========================================
-// 📦 FUNCIONES PARA GUARDAR Y LEER DATOS
-// ========================================
 
-/**
- * Guardar todo el estado de la aplicación en Firebase
- */
 export function saveToFirebase(appState) {
   const stateRef = ref(database, 'emailAssignmentSystem');
   set(stateRef, {
