@@ -1,8 +1,13 @@
+// ========================================
+// 🔥 IMPORTAR FIREBASE
+// ========================================
+import { saveToFirebase, listenToFirebase, loadFromFirebase } from './firebase-config.js';
+
 // ===================================
-// DATOS INICIALES DEL EQUIPO
+// CONFIGURACIÓN DEL EQUIPO
 // ===================================
 const teamMembers = [
-    'Moni', 'Ale', 'Jose', 'Sofi', 'Dani', 'Steph', 'Ali'
+    'Moni', 'Ale', 'Jose', 'Steph', 'Dani', 'Sofi', 'Ali'
 ];
 
 const weekDays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
@@ -17,39 +22,71 @@ let appState = {
     teamStatus: {} // {Ali: 'presente', Moni: 'lunch', ...}
 };
 
+// Variable para evitar loops infinitos de sincronización
+let isUpdatingFromFirebase = false;
+
 // ===================================
 // INICIALIZACIÓN - Se ejecuta al cargar la página
 // ===================================
 document.addEventListener('DOMContentLoaded', () => {
-    loadFromLocalStorage(); // Carga datos guardados
-    initializeTeamStatus(); // Inicializa estados del equipo
-    updateQueue(); //  NUEVO: Actualiza la cola según el día actual
-    renderWeekGrid(); // Muestra el grid semanal
-    renderQueue(); // Muestra el sistema de turnos
-    renderTeamStatus(); // Muestra las tarjetas del equipo
-    setupEventListeners(); // Configura los botones
+    // PRIMERO: Cargar datos desde Firebase
+    loadFromFirebase((data) => {
+        if (data) {
+            // Hay datos guardados, cargarlos
+            appState = {
+                weekAssignments: data.weekAssignments || {},
+                queue: data.queue || [...teamMembers],
+                currentIndex: data.currentIndex || 0,
+                teamStatus: data.teamStatus || {}
+            };
+        }
+        
+        // Inicializar estados si no existen
+        initializeTeamStatus();
+        
+        // Actualizar y renderizar todo
+        updateQueue();
+        renderWeekGrid();
+        renderQueue();
+        renderTeamStatus();
+        setupEventListeners();
+        
+        // DESPUÉS: Escuchar cambios en tiempo real
+        listenToFirebase((newData) => {
+            if (!isUpdatingFromFirebase) {
+                isUpdatingFromFirebase = true;
+                
+                appState = {
+                    weekAssignments: newData.weekAssignments || {},
+                    queue: newData.queue || [...teamMembers],
+                    currentIndex: newData.currentIndex || 0,
+                    teamStatus: newData.teamStatus || {}
+                };
+                
+                // Actualizar interfaz
+                renderWeekGrid();
+                renderQueue();
+                renderTeamStatus();
+                
+                setTimeout(() => {
+                    isUpdatingFromFirebase = false;
+                }, 100);
+            }
+        });
+    });
 });
+
 // ===================================
-// FUNCIÓN 1: CARGAR DATOS DEL LOCALSTORAGE
+// FUNCIÓN: GUARDAR EN FIREBASE (reemplaza localStorage)
 // ===================================
-function loadFromLocalStorage() {
-    const saved = localStorage.getItem('emailAssignmentSystem');
-    if (saved) {
-        appState = JSON.parse(saved);
-        console.log('✅ Datos cargados desde localStorage');
+function saveState() {
+    if (!isUpdatingFromFirebase) {
+        saveToFirebase(appState);
     }
 }
 
 // ===================================
-// FUNCIÓN 2: GUARDAR DATOS EN LOCALSTORAGE
-// ===================================
-function saveToLocalStorage() {
-    localStorage.setItem('emailAssignmentSystem', JSON.stringify(appState));
-    console.log('💾 Datos guardados en localStorage');
-}
-
-// ===================================
-// FUNCIÓN 3: INICIALIZAR ESTADO DEL EQUIPO
+// FUNCIÓN: INICIALIZAR ESTADO DEL EQUIPO
 // ===================================
 function initializeTeamStatus() {
     // Si no hay estados guardados, todos empiezan como "presente"
@@ -61,7 +98,7 @@ function initializeTeamStatus() {
 }
 
 // ===================================
-// FUNCIÓN 4: OBTENER PERSONAS DISPONIBLES
+// FUNCIÓN: OBTENER PERSONAS DISPONIBLES
 // ===================================
 function getAvailableMembers() {
     // Detectar el día actual de la semana
@@ -86,7 +123,7 @@ function getAvailableMembers() {
 }
 
 // ===================================
-// FUNCIÓN 5: GENERAR ASIGNACIÓN SEMANAL ALEATORIA
+// FUNCIÓN: GENERAR ASIGNACIÓN SEMANAL ALEATORIA
 // ===================================
 function generateWeekAssignments() {
     // Limpiar asignaciones previas
@@ -104,7 +141,7 @@ function generateWeekAssignments() {
         appState.weekAssignments[day] = shuffled[index];
     });
     
-    saveToLocalStorage();
+    saveState();
     renderWeekGrid();
     
     console.log('📅 Semana generada:', appState.weekAssignments);
@@ -114,7 +151,7 @@ function generateWeekAssignments() {
 }
 
 // ===================================
-// FUNCIÓN 6: RENDERIZAR GRID SEMANAL
+// FUNCIÓN: RENDERIZAR GRID SEMANAL
 // ===================================
 function renderWeekGrid() {
     const weekGrid = document.getElementById('weekGrid');
@@ -157,7 +194,7 @@ function renderWeekGrid() {
         // Evento: cuando cambia la selección
         select.addEventListener('change', (e) => {
             appState.weekAssignments[day] = e.target.value;
-            saveToLocalStorage();
+            saveState();
             console.log(`${day} asignado a: ${e.target.value}`);
         });
         
@@ -168,7 +205,7 @@ function renderWeekGrid() {
 }
 
 // ===================================
-// FUNCIÓN 7: ACTUALIZAR COLA DE TURNOS
+// FUNCIÓN: ACTUALIZAR COLA DE TURNOS
 // ===================================
 function updateQueue() {
     const available = getAvailableMembers();
@@ -195,12 +232,12 @@ function updateQueue() {
         appState.currentIndex = 0;
     }
     
-    saveToLocalStorage();
+    saveState();
     renderQueue();
 }
 
 // ===================================
-// FUNCIÓN 8: AVANZAR AL SIGUIENTE TURNO
+// FUNCIÓN: AVANZAR AL SIGUIENTE TURNO
 // ===================================
 function nextTurn() {
     const available = getAvailableMembers();
@@ -213,14 +250,14 @@ function nextTurn() {
     // Avanza al siguiente índice (circular)
     appState.currentIndex = (appState.currentIndex + 1) % appState.queue.length;
     
-    saveToLocalStorage();
+    saveState();
     renderQueue();
     
     console.log('➡️ Avanzó al siguiente turno');
 }
 
 // ===================================
-// FUNCIÓN 9: RENDERIZAR SISTEMA DE TURNOS
+// FUNCIÓN: RENDERIZAR SISTEMA DE TURNOS
 // ===================================
 function renderQueue() {
     const available = getAvailableMembers();
@@ -262,7 +299,7 @@ function renderQueue() {
 }
 
 // ===================================
-// FUNCIÓN 10: RENDERIZAR ESTADO DEL EQUIPO
+// FUNCIÓN: RENDERIZAR ESTADO DEL EQUIPO
 // ===================================
 function renderTeamStatus() {
     const teamStatusEl = document.getElementById('teamStatus');
@@ -315,7 +352,7 @@ function renderTeamStatus() {
 }
 
 // ===================================
-// FUNCIÓN 11: CAMBIAR ESTADO DE UNA PERSONA
+// FUNCIÓN: CAMBIAR ESTADO DE UNA PERSONA
 // ===================================
 function changePersonStatus(member, newStatus) {
     appState.teamStatus[member] = newStatus;
@@ -323,7 +360,7 @@ function changePersonStatus(member, newStatus) {
     // Actualizar la cola según disponibilidad
     updateQueue();
     
-    saveToLocalStorage();
+    saveState();
     renderTeamStatus();
     renderQueue();
     
@@ -331,7 +368,7 @@ function changePersonStatus(member, newStatus) {
 }
 
 // ===================================
-// FUNCIÓN 12: CONFIGURAR EVENT LISTENERS
+// FUNCIÓN: CONFIGURAR EVENT LISTENERS
 // ===================================
 function setupEventListeners() {
     // Botón: Generar Semana
@@ -349,8 +386,9 @@ function setupEventListeners() {
 // CONSOLA: Mensaje de bienvenida
 // ===================================
 console.log(`
-🚀 Sistema de Asignación de Correos
+🚀 Sistema de Asignación de Correos con Firebase
 📧 Equipo: ${teamMembers.join(', ')}
 ✅ Sistema inicializado correctamente
 ℹ️ Ali solo aparece en turnos los LUNES
+
 `);
