@@ -1,6 +1,4 @@
-// ========================================
-// 🔥 IMPORTAR FIREBASE
-// ========================================
+
 import { saveToFirebase, listenToFirebase, loadFromFirebase } from './firebase-config.js';
 
 // ===================================
