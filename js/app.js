@@ -1,5 +1,6 @@
-
 import { saveToFirebase, listenToFirebase, loadFromFirebase } from './firebase-config.js';
+import { initInfoSection } from './info.js';
+import { initReportesSection } from './reportes.js';
 
 // ===================================
 // CONFIGURACIÓN DEL EQUIPO
@@ -72,6 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+    
+    // Inicializar sistema de pestañas
+    initTabs();
 });
 
 // ===================================
@@ -153,6 +157,8 @@ function generateWeekAssignments() {
 // ===================================
 function renderWeekGrid() {
     const weekGrid = document.getElementById('weekGrid');
+    if (!weekGrid) return;
+    
     weekGrid.innerHTML = ''; // Limpia el contenido anterior
     
     weekDays.forEach(day => {
@@ -262,38 +268,44 @@ function renderQueue() {
     
     // Actualizar persona actual
     const currentPersonEl = document.getElementById('currentPerson');
-    if (available.length === 0) {
-        currentPersonEl.textContent = 'Sin personas disponibles';
-    } else {
-        currentPersonEl.textContent = appState.queue[appState.currentIndex] || '-';
+    if (currentPersonEl) {
+        if (available.length === 0) {
+            currentPersonEl.textContent = 'Sin personas disponibles';
+        } else {
+            currentPersonEl.textContent = appState.queue[appState.currentIndex] || '-';
+        }
     }
     
     // Actualizar siguiente persona
     const nextPersonEl = document.getElementById('nextPerson');
-    if (available.length === 0) {
-        nextPersonEl.textContent = '-';
-    } else {
-        const nextIndex = (appState.currentIndex + 1) % appState.queue.length;
-        nextPersonEl.textContent = appState.queue[nextIndex] || '-';
+    if (nextPersonEl) {
+        if (available.length === 0) {
+            nextPersonEl.textContent = '-';
+        } else {
+            const nextIndex = (appState.currentIndex + 1) % appState.queue.length;
+            nextPersonEl.textContent = appState.queue[nextIndex] || '-';
+        }
     }
     
     // Renderizar lista completa de turnos
     const queueListEl = document.getElementById('queueList');
-    queueListEl.innerHTML = '';
-    
-    appState.queue.forEach((member, index) => {
-        const li = document.createElement('li');
-        li.textContent = member;
+    if (queueListEl) {
+        queueListEl.innerHTML = '';
         
-        // Resaltar la persona actual
-        if (index === appState.currentIndex) {
-            li.style.background = '#FFD100';
-            li.style.fontWeight = 'bold';
-            li.style.color = '#003087';
-        }
-        
-        queueListEl.appendChild(li);
-    });
+        appState.queue.forEach((member, index) => {
+            const li = document.createElement('li');
+            li.textContent = member;
+            
+            // Resaltar la persona actual
+            if (index === appState.currentIndex) {
+                li.style.background = '#FFD100';
+                li.style.fontWeight = 'bold';
+                li.style.color = '#003087';
+            }
+            
+            queueListEl.appendChild(li);
+        });
+    }
 }
 
 // ===================================
@@ -301,6 +313,8 @@ function renderQueue() {
 // ===================================
 function renderTeamStatus() {
     const teamStatusEl = document.getElementById('teamStatus');
+    if (!teamStatusEl) return;
+    
     teamStatusEl.innerHTML = '';
     
     teamMembers.forEach(member => {
@@ -370,14 +384,56 @@ function changePersonStatus(member, newStatus) {
 // ===================================
 function setupEventListeners() {
     // Botón: Generar Semana
-    document.getElementById('generateWeek').addEventListener('click', () => {
-        generateWeekAssignments();
-    });
+    const generateWeekBtn = document.getElementById('generateWeek');
+    if (generateWeekBtn) {
+        generateWeekBtn.addEventListener('click', () => {
+            generateWeekAssignments();
+        });
+    }
     
     // Botón: Siguiente
-    document.getElementById('nextBtn').addEventListener('click', () => {
-        nextTurn();
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            nextTurn();
+        });
+    }
+}
+
+// ===================================
+// SISTEMA DE NAVEGACIÓN POR PESTAÑAS
+// ===================================
+function initTabs() {
+    const tabs = document.querySelectorAll('.tab-item');
+    const pages = document.querySelectorAll('.page-content');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetPage = tab.dataset.tab;
+            
+            // Remover clase active de todas las pestañas y páginas
+            tabs.forEach(t => t.classList.remove('active'));
+            pages.forEach(p => p.classList.remove('active'));
+            
+            // Activar pestaña y página seleccionada
+            tab.classList.add('active');
+            document.getElementById(`page-${targetPage}`).classList.add('active');
+            
+            console.log(`📄 Navegando a: ${targetPage}`);
+            
+            // Si navegamos a INFO, inicializar esa sección
+            if (targetPage === 'info') {
+                initInfoSection();
+            }
+            
+            // Si navegamos a REPORTES, inicializar esa sección
+            if (targetPage === 'reportes') {
+                initReportesSection();
+            }
+        });
     });
+    
+    console.log('✅ Sistema de pestañas inicializado');
 }
 
 // ===================================
@@ -388,5 +444,4 @@ console.log(`
 📧 Equipo: ${teamMembers.join(', ')}
 ✅ Sistema inicializado correctamente
 ℹ️ Ali solo aparece en turnos los LUNES
-
 `);

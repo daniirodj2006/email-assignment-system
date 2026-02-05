@@ -2,17 +2,18 @@
    VARIABLES DE COLOR - STRYKER THEME
    =================================== */
 :root {
-    --stryker-blue: #003087;      /* Azul principal Stryker */
-    --stryker-navy: #001F54;      /* Azul oscuro */
-    --stryker-yellow: #FFD100;    /* Amarillo acento */
-    --stryker-light: #F5F7FA;     /* Fondo claro */
-    --text-dark: #1A1A1A;         /* Texto principal */
-    --text-light: #6B7280;        /* Texto secundario */
+    --stryker-blue: #003087;
+    --stryker-navy: #001F54;
+    --stryker-yellow: #FFD100;
+    --stryker-light: #F5F7FA;
+    --stryker-light-blue: #E3F2FD;
+    --text-dark: #1A1A1A;
+    --text-light: #6B7280;
     --white: #FFFFFF;
-    --success: #10B981;           /* Verde para presente */
-    --warning: #F59E0B;           /* Naranja para lunch */
-    --danger: #EF4444;            /* Rojo para ausente */
-    --info: #3B82F6;              /* Azul para meeting */
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --info: #3B82F6;
 }
 
 /* ===================================
@@ -46,7 +47,7 @@ header {
     color: var(--white);
     padding: 2rem 0;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
+    margin-bottom: 0;
 }
 
 header h1 {
@@ -59,6 +60,84 @@ header h1 {
     font-size: 1rem;
     opacity: 0.9;
     font-weight: 300;
+}
+
+/* ===================================
+   NAVEGACIÓN CON PESTAÑAS
+   =================================== */
+.tabs-navigation {
+    background: linear-gradient(135deg, #b8a44e 0%, var(--stryker-yellow) 100%);
+    box-shadow: 0 4px 12px rgba(255, 209, 0, 0.4);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    margin-bottom: 2rem;
+}
+
+.tabs-menu {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+}
+
+.tab-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 15px 30px;
+    cursor: pointer;
+    color: var(--stryker-navy);
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border-bottom: 4px solid transparent;
+}
+
+.tab-item:hover {
+    background: rgba(235, 179, 25, 0.87);
+    border-bottom-color: var(--stryker-blue);
+}
+
+.tab-item.active {
+    background: rgb(255, 197, 7);
+    border-bottom-color: var(--stryker-blue);
+}
+
+.tab-icon {
+    font-size: 1.3rem;
+}
+
+.tab-label {
+    font-size: 1rem;
+}
+
+.tab-item:active {
+    transform: scale(0.98);
+}
+/* ===================================
+   PÁGINAS/CONTENIDO
+   =================================== */
+.page-content {
+    display: none;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.page-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ===================================
@@ -365,27 +444,233 @@ header h1 {
 }
 
 /* ===================================
-   CRONÓMETRO DE LUNCH
+   SECCIÓN INFO - Backups y Horarios
    =================================== */
-.lunch-timer {
-    display: inline-block;
-    margin-left: 0.5rem;
-    padding: 0.25rem 0.5rem;
-    background: var(--warning);
-    color: var(--white);
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    animation: pulse 2s infinite;
+.info-subsection {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--stryker-light-blue) 0%, var(--stryker-light) 100%);
+    border-radius: 12px;
+    border: 2px solid var(--stryker-blue);
 }
 
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.7;
-    }
+.info-subsection h3 {
+    color: var(--stryker-navy);
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+/* Tabla de Backups */
+.table-container {
+    overflow-x: auto;
+}
+
+.backup-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 48, 135, 0.1);
+}
+
+.backup-table thead {
+    background: linear-gradient(135deg, var(--stryker-navy) 0%, var(--stryker-blue) 100%);
+    color: white;
+}
+
+.backup-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.backup-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #E3F2FD;
+}
+
+.backup-table tbody tr:hover {
+    background: var(--stryker-light);
+    transition: background 0.2s ease;
+}
+
+.backup-table select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid var(--stryker-blue);
+    border-radius: 6px;
+    background: white;
+    color: #333;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.backup-table select:hover {
+    border-color: var(--stryker-yellow);
+}
+
+.backup-table select:focus {
+    outline: none;
+    border-color: var(--stryker-navy);
+    box-shadow: 0 0 0 3px rgba(0, 48, 135, 0.2);
+}
+
+/* Botón Editar/Guardar */
+.btn-edit {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, var(--stryker-blue) 0%, var(--stryker-navy) 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 48, 135, 0.2);
+}
+
+.btn-edit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 48, 135, 0.3);
+}
+
+.btn-edit.editing {
+    background: linear-gradient(135deg, var(--stryker-yellow) 0%, #FFDB33 100%);
+    color: var(--stryker-navy);
+}
+
+/* Horarios de Lunch */
+.lunch-schedule-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.lunch-card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid var(--stryker-blue);
+    box-shadow: 0 2px 6px rgba(0, 48, 135, 0.1);
+    transition: all 0.3s ease;
+}
+
+.lunch-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 48, 135, 0.2);
+    border-color: var(--stryker-yellow);
+}
+
+.lunch-card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--stryker-light);
+}
+
+.lunch-card-header span {
+    font-weight: 700;
+    color: var(--stryker-navy);
+    font-size: 1.05rem;
+}
+
+.lunch-time-input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid var(--stryker-blue);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #333;
+    background: var(--stryker-light);
+    transition: all 0.3s ease;
+}
+
+.lunch-time-input:focus {
+    outline: none;
+    border-color: var(--stryker-navy);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0, 48, 135, 0.2);
+}
+
+/* Modal de confirmación */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    border: 3px solid var(--stryker-blue);
+}
+
+.modal-content h3 {
+    color: var(--stryker-navy);
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.modal-content p {
+    color: #555;
+    margin-bottom: 25px;
+    font-size: 1rem;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn-confirm, .btn-cancel {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.btn-confirm {
+    background: linear-gradient(135deg, var(--stryker-blue) 0%, var(--stryker-navy) 100%);
+    color: white;
+}
+
+.btn-confirm:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 48, 135, 0.3);
+}
+
+.btn-cancel {
+    background: #e9ecef;
+    color: #333;
+}
+
+.btn-cancel:hover {
+    background: #dee2e6;
 }
 
 /* ===================================
@@ -398,4 +683,290 @@ footer {
     font-size: 0.9rem;
 }
 
-/* =====
+/* ===================================
+   RESPONSIVE
+   =================================== */
+@media (max-width: 768px) {
+    .tabs-menu {
+        gap: 5px;
+    }
+    
+    .tab-item {
+        padding: 12px 15px;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .tab-label {
+        font-size: 0.8rem;
+    }
+    
+    .tab-icon {
+        font-size: 1.1rem;
+    }
+    
+    .backup-table {
+        font-size: 0.85rem;
+    }
+    
+    .backup-table th,
+    .backup-table td {
+        padding: 10px 8px;
+    }
+    
+    .lunch-schedule-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+}
+/* ===================================
+   SECCIÓN REPORTES - Calendario
+   =================================== */
+
+.week-selector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--stryker-light);
+    border-radius: 10px;
+    border: 2px solid var(--stryker-blue);
+}
+
+.week-selector h3 {
+    color: var(--stryker-navy);
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.btn-week-nav {
+    padding: 0.6rem 1.2rem;
+    background: var(--stryker-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-week-nav:hover {
+    background: var(--stryker-navy);
+    transform: translateY(-2px);
+}
+
+.btn-week-nav:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-danger {
+    padding: 0.6rem 1.2rem;
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+/* Calendario Grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+}
+
+.calendar-day {
+    background: white;
+    border: 2px solid var(--stryker-blue);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.calendar-day:hover {
+    box-shadow: 0 4px 12px rgba(0, 48, 135, 0.2);
+    transform: translateY(-2px);
+}
+
+.calendar-day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--stryker-yellow);
+}
+
+.calendar-day-name {
+    font-weight: 700;
+    color: var(--stryker-navy);
+    font-size: 1rem;
+}
+
+.calendar-day-date {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.calendar-day-person {
+    margin-bottom: 0.8rem;
+}
+
+.calendar-day-person select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 2px solid var(--stryker-blue);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background: var(--stryker-light);
+    cursor: pointer;
+}
+
+.calendar-day-person select:focus {
+    outline: none;
+    border-color: var(--stryker-navy);
+    background: white;
+}
+
+.calendar-day-person select:disabled {
+    background: #f0f0f0;
+    cursor: not-allowed;
+}
+
+.btn-edit-day {
+    width: 100%;
+    padding: 0.5rem;
+    background: var(--stryker-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-edit-day:hover {
+    background: var(--stryker-navy);
+}
+
+.btn-edit-day.editing {
+    background: var(--stryker-yellow);
+    color: var(--stryker-navy);
+}
+
+/* Historial de Reportes */
+.reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.report-item {
+    background: var(--stryker-light);
+    border: 2px solid var(--stryker-blue);
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.report-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 48, 135, 0.15);
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 2px solid var(--stryker-yellow);
+}
+
+.report-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--stryker-navy);
+}
+
+.report-date {
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.report-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.8rem;
+}
+
+.report-day {
+    background: white;
+    padding: 0.8rem;
+    border-radius: 6px;
+    border-left: 4px solid var(--stryker-blue);
+}
+
+.report-day-name {
+    font-weight: 700;
+    color: var(--stryker-navy);
+    margin-bottom: 0.3rem;
+}
+
+.report-day-person {
+    color: var(--text-dark);
+    font-size: 0.95rem;
+}
+
+.btn-delete-report {
+    padding: 0.5rem 1rem;
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-delete-report:hover {
+    background: #dc2626;
+}
+
+.empty-reports {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .calendar-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .week-selector {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .report-content {
+        grid-template-columns: 1fr;
+    }
+}

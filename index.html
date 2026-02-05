@@ -11,55 +11,160 @@
     <header>
         <div class="container">
             <h1>Sistema de Asignación de Correos</h1>
-            <p class="subtitle">Sistema para la asignacion de correos - Prophecy </p>
+            <p class="subtitle">Sistema para la asignación de correos - Prophecy</p>
         </div>
     </header>
+
+    <!-- NAVEGACIÓN CON PESTAÑAS -->
+    <nav class="tabs-navigation">
+        <div class="container">
+            <ul class="tabs-menu">
+                <li class="tab-item active" data-tab="home">
+                    <span class="tab-icon">🏠</span>
+                    <span class="tab-label">Inicio</span>
+                </li>
+                <li class="tab-item" data-tab="info">
+                    <span class="tab-icon">ℹ️</span>
+                    <span class="tab-label">Info</span>
+                </li>
+                <li class="tab-item" data-tab="reportes">
+                    <span class="tab-icon">📊</span>
+                    <span class="tab-label">Reportes</span>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="container">
         
-        <!-- SECCIÓN 1: GENERADOR SEMANAL -->
-        <section class="card">
-            <div class="card-header">
-                <h2>📅 Asignación Semanal</h2>
-                <button id="generateWeek" class="btn-primary">Generar Semana</button>
-            </div>
-            <div class="week-grid" id="weekGrid">
-                <!-- Se llenará dinámicamente con JavaScript -->
-            </div>
-        </section>
-
-        <!-- SECCIÓN 2: SISTEMA DE TURNOS -->
-        <section class="card">
-            <div class="card-header">
-                <h2>🔄 Siguiente en Turno</h2>
-            </div>
-            <div class="queue-container">
-                <div class="current-person">
-                    <p class="label">Persona Actual:</p>
-                    <h3 id="currentPerson">-</h3>
+        <!-- ================================== -->
+        <!-- PÁGINA 1: INICIO -->
+        <!-- ================================== -->
+        <div id="page-home" class="page-content active">
+            
+            <!-- SECCIÓN 1: GENERADOR SEMANAL -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>📅 Asignación Semanal</h2>
+                    <button id="generateWeek" class="btn-primary">Generar Semana</button>
                 </div>
-                <button id="nextBtn" class="btn-next">Siguiente ➜</button>
-                <div class="next-person">
-                    <p class="label">Próximo:</p>
-                    <h3 id="nextPerson">-</h3>
+                <div class="week-grid" id="weekGrid">
+                    <!-- Se llenará dinámicamente con JavaScript -->
                 </div>
-            </div>
-            <div class="queue-list">
-                <h4>Orden de Turnos:</h4>
-                <ul id="queueList"></ul>
-            </div>
-        </section>
+            </section>
 
-        <!-- SECCIÓN 3: GESTIÓN DE DISPONIBILIDAD -->
-        <section class="card">
-            <div class="card-header">
-                <h2>👥 Estado del Equipo</h2>
-            </div>
-            <div class="team-status" id="teamStatus">
-                <!-- Se llenará dinámicamente con JavaScript -->
-            </div>
-        </section>
+            <!-- SECCIÓN 2: SISTEMA DE TURNOS -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>🔄 Siguiente en Turno</h2>
+                </div>
+                <div class="queue-container">
+                    <div class="current-person">
+                        <p class="label">Persona Actual:</p>
+                        <h3 id="currentPerson">-</h3>
+                    </div>
+                    <button id="nextBtn" class="btn-next">Siguiente ➜</button>
+                    <div class="next-person">
+                        <p class="label">Próximo:</p>
+                        <h3 id="nextPerson">-</h3>
+                    </div>
+                </div>
+                <div class="queue-list">
+                    <h4>Orden de Turnos:</h4>
+                    <ul id="queueList"></ul>
+                </div>
+            </section>
+
+            <!-- SECCIÓN 3: GESTIÓN DE DISPONIBILIDAD -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>👥 Estado del Equipo</h2>
+                </div>
+                <div class="team-status" id="teamStatus">
+                    <!-- Se llenará dinámicamente con JavaScript -->
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ================================== -->
+        <!-- PÁGINA 2: INFO -->
+        <!-- ================================== -->
+        <div id="page-info" class="page-content">
+            
+            <section class="card">
+                <div class="card-header">
+                    <h2>ℹ️ Información del Equipo</h2>
+                </div>
+                
+                <!-- Sub-sección: Backups -->
+                <div class="info-subsection">
+                    <h3>🔄 Sistema de Backups</h3>
+                    <div class="table-container">
+                        <table class="backup-table" id="backupTable">
+                            <thead>
+                                <tr>
+                                    <th>Agente</th>
+                                    <th>Back-Up 1</th>
+                                    <th>Back-Up 2</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="backupTableBody">
+                                <!-- Se llenará dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Sub-sección: Horarios de Lunch -->
+                <div class="info-subsection">
+                    <h3>🍽️ Horarios de Lunch</h3>
+                    <div class="lunch-schedule-container" id="lunchSchedule">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ================================== -->
+<!-- PÁGINA 3: REPORTES -->
+<!-- ================================== -->
+<div id="page-reportes" class="page-content">
+    
+    <!-- Calendario Semanal Actual -->
+    <section class="card">
+        <div class="card-header">
+            <h2>📅 Calendario Semanal</h2>
+            <button id="generateReportBtn" class="btn-primary">Generar Reporte</button>
+        </div>
+        
+        <div class="week-selector">
+            <button id="prevWeekBtn" class="btn-week-nav">← Semana Anterior</button>
+            <h3 id="currentWeekDisplay">Semana Actual</h3>
+            <button id="nextWeekBtn" class="btn-week-nav">Semana Siguiente →</button>
+        </div>
+        
+        <div class="calendar-grid" id="calendarGrid">
+            <!-- Se llenará dinámicamente -->
+        </div>
+    </section>
+
+    <!-- Historial de Reportes -->
+    <section class="card">
+        <div class="card-header">
+            <h2>📊 Historial de Reportes</h2>
+            <button id="clearHistoryBtn" class="btn-danger">Limpiar Historial</button>
+        </div>
+        
+        <div class="reports-list" id="reportsList">
+            <!-- Se llenará dinámicamente -->
+        </div>
+    </section>
+
+</div>
 
     </main>
 
@@ -69,6 +174,6 @@
     </footer>
 
     <!-- SCRIPT -->
-  <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
