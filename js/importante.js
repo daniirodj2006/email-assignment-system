@@ -15,11 +15,9 @@ const NOTE_COLORS = [
 // Categorías tipo etiqueta
 const NOTE_TAGS = [
     '📌 General',
-    '🚨 Urgente',
+    '🚨 Importante',
     '📋 Proceso',
-    '👤 RRHH',
-    '💻 Sistema',
-    '📞 Contacto',
+    
 ];
 
 // ===================================
