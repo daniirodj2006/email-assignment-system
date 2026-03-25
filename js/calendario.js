@@ -1,4 +1,4 @@
-import { saveToFirebase, listenToFirebase } from './firebase-config.js';
+import { saveFieldToFirebase, loadFieldFromFirebase, listenFieldFromFirebase } from './firebase-config.js';
 
 // ===================================
 // CONFIGURACIÓN
@@ -18,7 +18,7 @@ export const eventTypes = [
     { key: 'dia_libre',       label: '🌴 Día Libre',        color: '#10B981' },
     { key: 'sick_day',        label: '🤒 Sick Day',         color: '#EF4444' },
     { key: 'vacaciones',      label: '✈️ Vacaciones',       color: '#8B5CF6' },
-    { key: 'meeting_externo', label: '🤝 Meeting Externo',  color: '#F59E0B' },
+    { key: 'meeting_externo', label: '🤝 Meeting ',  color: '#F59E0B' },
     { key: 'otro',            label: '📌 Otro',             color: '#6B7280' }
 ];
 
@@ -126,23 +126,25 @@ function timeToMinutes(t) {
 // FIREBASE
 // ===================================
 function loadCalendarData() {
-    listenToFirebase((data) => {
-        if (isLoadingFromFirebase) return;
-        isLoadingFromFirebase = true;
-        if (data && data.calendarEvents) {
-            calendarState.events = (data.calendarEvents || []).map(normalizeEvent);
+    // Solo carga una vez al inicio
+    loadFieldFromFirebase('calendarEvents', (data) => {
+        if (data) {
+            calendarState.events = (Array.isArray(data) ? data : []).map(normalizeEvent);
+            console.log('✅ Eventos del calendario cargados:', calendarState.events.length);
         }
         renderCalendar();
         renderUpcomingEvents();
-        setTimeout(() => { isLoadingFromFirebase = false; }, 100);
     });
 }
 
+let isSaving = false;
+
 function saveCalendarData() {
-    if (isLoadingFromFirebase) return;
-    listenToFirebase((currentData) => {
-        saveToFirebase({ ...currentData, calendarEvents: calendarState.events });
-    });
+    // Estado local ya actualizado — solo persistimos
+    if (isSaving) return;
+    isSaving = true;
+    saveFieldToFirebase('calendarEvents', calendarState.events);
+    setTimeout(() => { isSaving = false; }, 300);
 }
 
 // ===================================

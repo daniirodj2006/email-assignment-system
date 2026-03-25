@@ -1,4 +1,4 @@
-import { saveToFirebase, listenToFirebase } from './firebase-config.js';
+import { saveFieldToFirebase, loadFieldFromFirebase, listenFieldFromFirebase } from './firebase-config.js';
 
 // ===================================
 // COLORES DE NOTAS
@@ -7,7 +7,7 @@ const NOTE_COLORS = [
     { key: 'yellow',  bg: '#FEF9C3', border: '#FDE047', label: '🟡' },
     { key: 'blue',    bg: '#DBEAFE', border: '#93C5FD', label: '🔵' },
     { key: 'green',   bg: '#DCFCE7', border: '#86EFAC', label: '🟢' },
-    { key: 'red',     bg: '#FEE2E2', border: '#FCA5A5', label: '🔴' },
+    { key: 'red',     bg: '#f3d2eb', border: '#f074cb', label: '🩷' },
     { key: 'purple',  bg: '#EDE9FE', border: '#C4B5FD', label: '🟣' },
     { key: 'orange',  bg: '#FFEDD5', border: '#FDBA74', label: '🟠' },
 ];
@@ -15,9 +15,11 @@ const NOTE_COLORS = [
 // Categorías tipo etiqueta
 const NOTE_TAGS = [
     '📌 General',
-    '🚨 Importante',
+    '🚨 Urgente',
     '📋 Proceso',
-    
+    '👤 RRHH',
+    '💻 Sistema',
+    '📞 Contacto',
 ];
 
 // ===================================
@@ -63,26 +65,26 @@ export function initImportanteSection() {
 // FIREBASE
 // ===================================
 function loadImportanteData() {
-    listenToFirebase((data) => {
-        if (isLoadingFromFirebase) return;
-        isLoadingFromFirebase = true;
-
-        if (data && data.importanteNotes) {
-            importanteState.notes = data.importanteNotes || [];
+    // Solo carga una vez al inicio — el estado local es la fuente de verdad
+    loadFieldFromFirebase('importanteNotes', (data) => {
+        if (data) {
+            importanteState.notes = Array.isArray(data) ? data : [];
             console.log('✅ Notas cargadas:', importanteState.notes.length);
         }
-
         renderNotes();
         renderFilters();
-        setTimeout(() => { isLoadingFromFirebase = false; }, 100);
     });
 }
 
+let isSaving = false;
+
 function saveImportanteData() {
-    if (isLoadingFromFirebase) return;
-    listenToFirebase((currentData) => {
-        saveToFirebase({ ...currentData, importanteNotes: importanteState.notes });
-    });
+    // El estado local ya fue actualizado ANTES de llamar esta función.
+    // Solo persistimos a Firebase sin esperar respuesta ni re-renderizar.
+    if (isSaving) return;
+    isSaving = true;
+    saveFieldToFirebase('importanteNotes', importanteState.notes);
+    setTimeout(() => { isSaving = false; }, 300);
 }
 
 // ===================================
