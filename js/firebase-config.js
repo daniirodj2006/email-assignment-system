@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+import { getDatabase, ref, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCTwqp83O1npnzTGXKSVrvqFhcX2OUsAZM",
@@ -18,10 +18,10 @@ const database = getDatabase(app);
 // FUNCIONES ORIGINALES (app.js las usa)
 // ===================================
 
-/** Guarda el estado principal (queue, turnos, teamStatus) */
+/** Guarda el estado principal (queue, turnos, teamStatus) sin tocar los otros módulos */
 export function saveToFirebase(appState) {
   const stateRef = ref(database, 'emailAssignmentSystem');
-  set(stateRef, {
+  update(stateRef, {
     weekAssignments: appState.weekAssignments || {},
     queue:           appState.queue           || [],
     currentIndex:    appState.currentIndex    || 0,
