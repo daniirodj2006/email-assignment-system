@@ -1,6 +1,7 @@
 import { saveToFirebase, listenToFirebase, loadFromFirebase } from './firebase-config.js';
 import { initInfoSection } from './info.js';
-import { initReportesSection } from './reportes.js';
+import { initCalendarioSection, getPersonEventsToday, eventTypes } from './calendario.js';
+import { initImportanteSection } from './importante.js';
 
 // ===================================
 // CONFIGURACIÓN DEL EQUIPO
@@ -9,77 +10,78 @@ const teamMembers = [
     'Moni', 'Ale', 'Jose', 'Steph', 'Dani', 'Sofi', 'Ali'
 ];
 
+// Mapa de nombre corto → nombre completo (para cruzar con el calendario)
+const nameMap = {
+    'Moni':  'Mónica Murillo',
+    'Ale':   'Alejandra Murillo',
+    'Jose':  'Jose Solano',
+    'Steph': 'Stephanie Gutierrez',
+    'Dani':  'Daniela Rodriguez',
+    'Sofi':  'Sofia Calderon',
+    'Ali':   'Alisson Elizondo'
+};
+
 const weekDays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 
 // ===================================
 // ESTADO DE LA APLICACIÓN
 // ===================================
 let appState = {
-    weekAssignments: {}, // {Lunes: 'Ali', Martes: 'Moni', ...}
-    queue: [...teamMembers], // Cola de turnos
-    currentIndex: 0, // Índice de la persona actual
-    teamStatus: {} // {Ali: 'presente', Moni: 'lunch', ...}
+    weekAssignments: {},
+    queue:           [...teamMembers],
+    currentIndex:    0,
+    teamStatus:      {}
 };
 
-// Variable para evitar loops infinitos de sincronización
 let isUpdatingFromFirebase = false;
 
 // ===================================
-// INICIALIZACIÓN - Se ejecuta al cargar la página
+// INICIALIZACIÓN
 // ===================================
 document.addEventListener('DOMContentLoaded', () => {
-    // PRIMERO: Cargar datos desde Firebase
     loadFromFirebase((data) => {
         if (data) {
-            // Hay datos guardados, cargarlos
             appState = {
                 weekAssignments: data.weekAssignments || {},
-                queue: data.queue || [...teamMembers],
-                currentIndex: data.currentIndex || 0,
-                teamStatus: data.teamStatus || {}
+                queue:           data.queue           || [...teamMembers],
+                currentIndex:    data.currentIndex    || 0,
+                teamStatus:      data.teamStatus      || {}
             };
         }
-        
-        // Inicializar estados si no existen
+
         initializeTeamStatus();
-        
-        // Actualizar y renderizar todo
         updateQueue();
         renderWeekGrid();
         renderQueue();
         renderTeamStatus();
         setupEventListeners();
-        
-        // DESPUÉS: Escuchar cambios en tiempo real
+
+        // Escuchar cambios en tiempo real
         listenToFirebase((newData) => {
             if (!isUpdatingFromFirebase) {
                 isUpdatingFromFirebase = true;
-                
+
                 appState = {
                     weekAssignments: newData.weekAssignments || {},
-                    queue: newData.queue || [...teamMembers],
-                    currentIndex: newData.currentIndex || 0,
-                    teamStatus: newData.teamStatus || {}
+                    queue:           newData.queue           || [...teamMembers],
+                    currentIndex:    newData.currentIndex    || 0,
+                    teamStatus:      newData.teamStatus      || {}
                 };
-                
-                // Actualizar interfaz
+
                 renderWeekGrid();
                 renderQueue();
                 renderTeamStatus();
-                
-                setTimeout(() => {
-                    isUpdatingFromFirebase = false;
-                }, 100);
+
+                setTimeout(() => { isUpdatingFromFirebase = false; }, 100);
             }
         });
     });
-    
-    // Inicializar sistema de pestañas
+
     initTabs();
 });
 
 // ===================================
-// FUNCIÓN: GUARDAR EN FIREBASE (reemplaza localStorage)
+// GUARDAR EN FIREBASE
 // ===================================
 function saveState() {
     if (!isUpdatingFromFirebase) {
@@ -88,10 +90,9 @@ function saveState() {
 }
 
 // ===================================
-// FUNCIÓN: INICIALIZAR ESTADO DEL EQUIPO
+// INICIALIZAR ESTADO DEL EQUIPO
 // ===================================
 function initializeTeamStatus() {
-    // Si no hay estados guardados, todos empiezan como "presente"
     if (Object.keys(appState.teamStatus).length === 0) {
         teamMembers.forEach(member => {
             appState.teamStatus[member] = 'presente';
@@ -100,108 +101,102 @@ function initializeTeamStatus() {
 }
 
 // ===================================
-// FUNCIÓN: OBTENER PERSONAS DISPONIBLES
+// OBTENER PERSONAS DISPONIBLES
 // ===================================
 function getAvailableMembers() {
-    // Detectar el día actual de la semana
-    const today = new Date();
-    const dayOfWeek = today.getDay(); // 0=Domingo, 1=Lunes, 2=Martes, ..., 6=Sábado
-    
-    // Filtrar personas con estado "presente"
-    let available = teamMembers.filter(member => 
+    const today      = new Date();
+    const dayOfWeek  = today.getDay();
+
+    // Solo personas con estado "presente"
+    let available = teamMembers.filter(member =>
         appState.teamStatus[member] === 'presente'
     );
-    
-    // REGLA: Ali solo trabaja los LUNES en el sistema de turnos
-    // Si hoy NO es Lunes (1), excluir a Ali del sistema de turnos
+
+    // Excluir personas con eventos en el calendario HOY
+    available = available.filter(member => {
+        const fullName     = nameMap[member];
+        const calendarEvents = getPersonEventsToday(fullName);
+        if (calendarEvents.length > 0) {
+            console.log(`📅 ${member} excluido/a por evento en calendario: ${calendarEvents[0].type}`);
+            return false;
+        }
+        return true;
+    });
+
+    // Ali solo trabaja los lunes
     if (dayOfWeek !== 1) {
         available = available.filter(member => member !== 'Ali');
-        console.log('📅 Hoy no es Lunes - Ali excluida del sistema de turnos');
+        console.log('📅 Hoy no es Lunes — Ali excluida del sistema de turnos');
     } else {
-        console.log('📅 Hoy es Lunes - Ali incluida en el sistema de turnos');
+        console.log('📅 Hoy es Lunes — Ali incluida en el sistema de turnos');
     }
-    
+
     return available;
 }
 
 // ===================================
-// FUNCIÓN: GENERAR ASIGNACIÓN SEMANAL ALEATORIA
+// GENERAR ASIGNACIÓN SEMANAL
 // ===================================
 function generateWeekAssignments() {
-    // Limpiar asignaciones previas
     appState.weekAssignments = {};
-    
-    // TODAS las personas disponibles (incluyendo Ali)
+
     const allMembers = [...teamMembers];
-    
-    // Mezclar aleatoriamente
-    const shuffled = allMembers.sort(() => Math.random() - 0.5);
-    
-    // Asignar a los 5 días SIN REPETIR
-    // Solo se asignan 5 personas de las 7 disponibles
+
+    // Fisher-Yates shuffle (más aleatorio que sort)
+    for (let i = allMembers.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [allMembers[i], allMembers[j]] = [allMembers[j], allMembers[i]];
+    }
+
     weekDays.forEach((day, index) => {
-        appState.weekAssignments[day] = shuffled[index];
+        appState.weekAssignments[day] = allMembers[index];
     });
-    
+
     saveState();
     renderWeekGrid();
-    
+
     console.log('📅 Semana generada:', appState.weekAssignments);
-    console.log('✅ Nadie se repite en la semana');
-    console.log('✅ Ali puede aparecer cualquier día (o ninguno)');
-    console.log('ℹ️ Los estados (Lunch/Meeting/Ausente) NO afectan el generador semanal');
 }
 
 // ===================================
-// FUNCIÓN: RENDERIZAR GRID SEMANAL
+// RENDERIZAR GRID SEMANAL
 // ===================================
 function renderWeekGrid() {
     const weekGrid = document.getElementById('weekGrid');
     if (!weekGrid) return;
-    
-    weekGrid.innerHTML = ''; // Limpia el contenido anterior
-    
+
+    weekGrid.innerHTML = '';
+
     weekDays.forEach(day => {
-        // Crea la tarjeta del día
         const dayCard = document.createElement('div');
         dayCard.className = 'day-card';
-        
-        // Nombre del día
+
         const dayName = document.createElement('div');
         dayName.className = 'day-name';
         dayName.textContent = day;
-        
-        // Select para elegir persona
+
         const select = document.createElement('select');
         select.id = `select-${day}`;
-        
-        // Opción vacía
+
         const emptyOption = document.createElement('option');
         emptyOption.value = '';
         emptyOption.textContent = '-- Seleccionar --';
         select.appendChild(emptyOption);
-        
-        // Agregar todas las personas al select
+
         teamMembers.forEach(member => {
-            const option = document.createElement('option');
-            option.value = member;
+            const option    = document.createElement('option');
+            option.value    = member;
             option.textContent = member;
-            
-            // Si hay asignación guardada, seleccionarla
-            if (appState.weekAssignments[day] === member) {
-                option.selected = true;
-            }
-            
+            if (appState.weekAssignments[day] === member) option.selected = true;
             select.appendChild(option);
         });
-        
-        // Evento: cuando cambia la selección
+
         select.addEventListener('change', (e) => {
             appState.weekAssignments[day] = e.target.value;
             saveState();
             console.log(`${day} asignado a: ${e.target.value}`);
         });
-        
+
         dayCard.appendChild(dayName);
         dayCard.appendChild(select);
         weekGrid.appendChild(dayCard);
@@ -209,74 +204,64 @@ function renderWeekGrid() {
 }
 
 // ===================================
-// FUNCIÓN: ACTUALIZAR COLA DE TURNOS
+// ACTUALIZAR COLA DE TURNOS
 // ===================================
 function updateQueue() {
     const available = getAvailableMembers();
-    
+
     if (available.length === 0) {
-        appState.queue = [];
+        appState.queue        = [];
         appState.currentIndex = 0;
         renderQueue();
         return;
     }
-    
-    // SIEMPRE reconstruir la cola con las personas disponibles
-    // Esto asegura que los cambios de estado se reflejen inmediatamente
+
     appState.queue = [...available];
-    
-    // Si el índice actual está fuera de rango, reiniciar
+
     if (appState.currentIndex >= appState.queue.length) {
         appState.currentIndex = 0;
     }
-    
-    // Verificar que la persona actual sigue disponible
+
     const currentPerson = appState.queue[appState.currentIndex];
     if (!currentPerson || appState.teamStatus[currentPerson] !== 'presente') {
         appState.currentIndex = 0;
     }
-    
+
     saveState();
     renderQueue();
 }
 
 // ===================================
-// FUNCIÓN: AVANZAR AL SIGUIENTE TURNO
+// AVANZAR AL SIGUIENTE TURNO
 // ===================================
 function nextTurn() {
     const available = getAvailableMembers();
-    
+
     if (available.length === 0) {
         alert('⚠️ No hay personas disponibles en la cola.');
         return;
     }
-    
-    // Avanza al siguiente índice (circular)
+
     appState.currentIndex = (appState.currentIndex + 1) % appState.queue.length;
-    
     saveState();
     renderQueue();
-    
+
     console.log('➡️ Avanzó al siguiente turno');
 }
 
 // ===================================
-// FUNCIÓN: RENDERIZAR SISTEMA DE TURNOS
+// RENDERIZAR SISTEMA DE TURNOS
 // ===================================
 function renderQueue() {
     const available = getAvailableMembers();
-    
-    // Actualizar persona actual
+
     const currentPersonEl = document.getElementById('currentPerson');
     if (currentPersonEl) {
-        if (available.length === 0) {
-            currentPersonEl.textContent = 'Sin personas disponibles';
-        } else {
-            currentPersonEl.textContent = appState.queue[appState.currentIndex] || '-';
-        }
+        currentPersonEl.textContent = available.length === 0
+            ? 'Sin personas disponibles'
+            : (appState.queue[appState.currentIndex] || '-');
     }
-    
-    // Actualizar siguiente persona
+
     const nextPersonEl = document.getElementById('nextPerson');
     if (nextPersonEl) {
         if (available.length === 0) {
@@ -286,77 +271,81 @@ function renderQueue() {
             nextPersonEl.textContent = appState.queue[nextIndex] || '-';
         }
     }
-    
-    // Renderizar lista completa de turnos
+
     const queueListEl = document.getElementById('queueList');
     if (queueListEl) {
         queueListEl.innerHTML = '';
-        
         appState.queue.forEach((member, index) => {
             const li = document.createElement('li');
             li.textContent = member;
-            
-            // Resaltar la persona actual
             if (index === appState.currentIndex) {
-                li.style.background = '#FFD100';
-                li.style.fontWeight = 'bold';
-                li.style.color = '#003087';
+                li.style.background  = '#FFD100';
+                li.style.fontWeight  = 'bold';
+                li.style.color       = '#003087';
             }
-            
             queueListEl.appendChild(li);
         });
     }
 }
 
 // ===================================
-// FUNCIÓN: RENDERIZAR ESTADO DEL EQUIPO
+// RENDERIZAR ESTADO DEL EQUIPO
 // ===================================
 function renderTeamStatus() {
     const teamStatusEl = document.getElementById('teamStatus');
     if (!teamStatusEl) return;
-    
+
     teamStatusEl.innerHTML = '';
-    
+
     teamMembers.forEach(member => {
-        // Crear tarjeta de persona
+        const fullName      = nameMap[member];
+        const calEvents     = getPersonEventsToday(fullName);
+        const hasCalEvent   = calEvents.length > 0;
+        const calEventLabel = hasCalEvent
+            ? (eventTypes.find(t => t.key === calEvents[0].type)?.label || calEvents[0].type)
+            : null;
+
         const personCard = document.createElement('div');
         personCard.className = 'person-card';
-        
-        // Nombre
+
         const nameEl = document.createElement('div');
         nameEl.className = 'person-name';
         nameEl.textContent = member;
-        
-        // Contenedor de botones
+
+        // Si tiene evento en calendario, mostrar badge
+        if (hasCalEvent) {
+            const badge = document.createElement('span');
+            badge.className = 'cal-status-badge';
+            badge.textContent = calEventLabel;
+            nameEl.appendChild(badge);
+        }
+
         const buttonsDiv = document.createElement('div');
         buttonsDiv.className = 'status-buttons';
-        
-        // Estados disponibles
+
         const statuses = [
             { key: 'presente', label: 'Presente' },
-            { key: 'lunch', label: 'Lunch' },
-            { key: 'meeting', label: 'Meeting' },
-            { key: 'ausente', label: 'Ausente' }
+            { key: 'lunch',    label: 'Lunch'    },
+            { key: 'meeting',  label: 'Meeting'  },
+            { key: 'ausente',  label: 'Ausente'  }
         ];
-        
+
         statuses.forEach(status => {
             const btn = document.createElement('button');
             btn.className = `status-btn ${status.key}`;
             btn.textContent = status.label;
-            
-            // Si es el estado actual, marcarlo como activo
+
             if (appState.teamStatus[member] === status.key) {
                 btn.classList.add('active');
             }
-            
-            // Evento: cambiar estado
+
             btn.addEventListener('click', () => {
-                changePersonStatus(member, status.key);
+                changePersonStatus(member, status.key, hasCalEvent, calEventLabel);
             });
-            
+
             buttonsDiv.appendChild(btn);
         });
-        
+
         personCard.appendChild(nameEl);
         personCard.appendChild(buttonsDiv);
         teamStatusEl.appendChild(personCard);
@@ -364,39 +353,102 @@ function renderTeamStatus() {
 }
 
 // ===================================
-// FUNCIÓN: CAMBIAR ESTADO DE UNA PERSONA
+// CAMBIAR ESTADO DE UNA PERSONA
 // ===================================
-function changePersonStatus(member, newStatus) {
+function changePersonStatus(member, newStatus, hasCalEvent, calEventLabel) {
+    // Si alguien con evento en calendario se quiere marcar como "presente"
+    // → mostrar popup de confirmación
+    if (newStatus === 'presente' && hasCalEvent) {
+        showCalendarConflictModal(member, calEventLabel,
+            () => {
+                // Confirmado: agregar al queue igual
+                applyStatusChange(member, newStatus);
+            },
+            () => {
+                // Cancelado: no hacer nada
+                console.log(`❌ Adición de ${member} al queue cancelada`);
+            }
+        );
+        return;
+    }
+
+    applyStatusChange(member, newStatus);
+}
+
+function applyStatusChange(member, newStatus) {
     appState.teamStatus[member] = newStatus;
-    
-    // Actualizar la cola según disponibilidad
     updateQueue();
-    
     saveState();
     renderTeamStatus();
     renderQueue();
-    
     console.log(`${member} cambió a: ${newStatus}`);
 }
 
 // ===================================
-// FUNCIÓN: CONFIGURAR EVENT LISTENERS
+// POPUP: CONFIRMAR AGREGAR AL QUEUE
+// (cuando la persona tiene evento en el calendario)
+// ===================================
+function showCalendarConflictModal(member, calEventLabel, onConfirm, onCancel) {
+    let modal = document.getElementById('calConflictModal');
+
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'calConflictModal';
+        modal.className = 'modal-overlay';
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div class="modal-content cal-conflict-modal">
+            <div class="cal-conflict-icon">📅</div>
+            <h3>${member} está fuera</h3>
+            <p class="cal-conflict-reason">
+                Motivo: <strong>${calEventLabel}</strong>
+            </p>
+            <p class="cal-conflict-question">
+                ¿Seguro que quieres agregarlo/a a la cola de turnos de todos modos?
+            </p>
+            <div class="modal-buttons">
+                <button class="btn-confirm" id="calConflictConfirm">Sí, agregar al queue</button>
+                <button class="btn-cancel"  id="calConflictCancel">Cancelar</button>
+            </div>
+        </div>
+    `;
+
+    modal.classList.add('active');
+
+    const close = () => modal.classList.remove('active');
+
+    document.getElementById('calConflictConfirm').onclick = () => {
+        close();
+        if (onConfirm) onConfirm();
+    };
+
+    document.getElementById('calConflictCancel').onclick = () => {
+        close();
+        if (onCancel) onCancel();
+    };
+
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            close();
+            if (onCancel) onCancel();
+        }
+    };
+}
+
+// ===================================
+// EVENT LISTENERS
 // ===================================
 function setupEventListeners() {
-    // Botón: Generar Semana
     const generateWeekBtn = document.getElementById('generateWeek');
     if (generateWeekBtn) {
-        generateWeekBtn.addEventListener('click', () => {
-            generateWeekAssignments();
-        });
+        generateWeekBtn.addEventListener('click', generateWeekAssignments);
     }
-    
-    // Botón: Siguiente
+
     const nextBtn = document.getElementById('nextBtn');
     if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            nextTurn();
-        });
+        nextBtn.addEventListener('click', nextTurn);
     }
 }
 
@@ -404,44 +456,26 @@ function setupEventListeners() {
 // SISTEMA DE NAVEGACIÓN POR PESTAÑAS
 // ===================================
 function initTabs() {
-    const tabs = document.querySelectorAll('.tab-item');
+    const tabs  = document.querySelectorAll('.tab-item');
     const pages = document.querySelectorAll('.page-content');
-    
+
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             const targetPage = tab.dataset.tab;
-            
-            // Remover clase active de todas las pestañas y páginas
-            tabs.forEach(t => t.classList.remove('active'));
+
+            tabs.forEach(t  => t.classList.remove('active'));
             pages.forEach(p => p.classList.remove('active'));
-            
-            // Activar pestaña y página seleccionada
+
             tab.classList.add('active');
             document.getElementById(`page-${targetPage}`).classList.add('active');
-            
+
             console.log(`📄 Navegando a: ${targetPage}`);
-            
-            // Si navegamos a INFO, inicializar esa sección
-            if (targetPage === 'info') {
-                initInfoSection();
-            }
-            
-            // Si navegamos a REPORTES, inicializar esa sección
-            if (targetPage === 'reportes') {
-                initReportesSection();
-            }
+
+            if (targetPage === 'info')        initInfoSection();
+            if (targetPage === 'reportes')    initCalendarioSection();
+            if (targetPage === 'importante')  initImportanteSection();
         });
     });
-    
+
     console.log('✅ Sistema de pestañas inicializado');
 }
-
-// ===================================
-// CONSOLA: Mensaje de bienvenida
-// ===================================
-console.log(`
-🚀 Sistema de Asignación de Correos con Firebase
-📧 Equipo: ${teamMembers.join(', ')}
-✅ Sistema inicializado correctamente
-ℹ️ Ali solo aparece en turnos los LUNES
-`);

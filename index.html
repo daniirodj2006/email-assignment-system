@@ -7,11 +7,12 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+
     <!-- HEADER -->
     <header>
         <div class="container">
             <h1>Sistema de Asignación de Correos</h1>
-            <p class="subtitle">Sistema para la asignación de correos - Prophecy</p>
+            <p class="subtitle">Sistema para la asignación de correos — Prophecy</p>
         </div>
     </header>
 
@@ -28,8 +29,12 @@
                     <span class="tab-label">Info</span>
                 </li>
                 <li class="tab-item" data-tab="reportes">
-                    <span class="tab-icon">📊</span>
-                    <span class="tab-label">Reportes</span>
+                    <span class="tab-icon">📅</span>
+                    <span class="tab-label">Calendario</span>
+                </li>
+                <li class="tab-item" data-tab="importante">
+                    <span class="tab-icon">📌</span>
+                    <span class="tab-label">Importante</span>
                 </li>
             </ul>
         </div>
@@ -37,12 +42,12 @@
 
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="container">
-        
+
         <!-- ================================== -->
-        <!-- PÁGINA 1: INICIO -->
+        <!-- PÁGINA 1: INICIO                   -->
         <!-- ================================== -->
         <div id="page-home" class="page-content active">
-            
+
             <!-- SECCIÓN 1: GENERADOR SEMANAL -->
             <section class="card">
                 <div class="card-header">
@@ -50,7 +55,7 @@
                     <button id="generateWeek" class="btn-primary">Generar Semana</button>
                 </div>
                 <div class="week-grid" id="weekGrid">
-                    <!-- Se llenará dinámicamente con JavaScript -->
+                    <!-- Dinámico -->
                 </div>
             </section>
 
@@ -76,29 +81,29 @@
                 </div>
             </section>
 
-            <!-- SECCIÓN 3: GESTIÓN DE DISPONIBILIDAD -->
+            <!-- SECCIÓN 3: ESTADO DEL EQUIPO -->
             <section class="card">
                 <div class="card-header">
                     <h2>👥 Estado del Equipo</h2>
                 </div>
                 <div class="team-status" id="teamStatus">
-                    <!-- Se llenará dinámicamente con JavaScript -->
+                    <!-- Dinámico -->
                 </div>
             </section>
 
         </div>
 
         <!-- ================================== -->
-        <!-- PÁGINA 2: INFO -->
+        <!-- PÁGINA 2: INFO                     -->
         <!-- ================================== -->
         <div id="page-info" class="page-content">
-            
+
             <section class="card">
                 <div class="card-header">
                     <h2>ℹ️ Información del Equipo</h2>
                 </div>
-                
-                <!-- Sub-sección: Backups -->
+
+                <!-- Backups -->
                 <div class="info-subsection">
                     <h3>🔄 Sistema de Backups</h3>
                     <div class="table-container">
@@ -112,17 +117,17 @@
                                 </tr>
                             </thead>
                             <tbody id="backupTableBody">
-                                <!-- Se llenará dinámicamente -->
+                                <!-- Dinámico -->
                             </tbody>
                         </table>
                     </div>
                 </div>
-                
-                <!-- Sub-sección: Horarios de Lunch -->
+
+                <!-- Horarios de Lunch -->
                 <div class="info-subsection">
                     <h3>🍽️ Horarios de Lunch</h3>
                     <div class="lunch-schedule-container" id="lunchSchedule">
-                        <!-- Se llenará dinámicamente -->
+                        <!-- Dinámico -->
                     </div>
                 </div>
             </section>
@@ -130,50 +135,82 @@
         </div>
 
         <!-- ================================== -->
-<!-- PÁGINA 3: REPORTES -->
-<!-- ================================== -->
-<div id="page-reportes" class="page-content">
-    
-    <!-- Calendario Semanal Actual -->
-    <section class="card">
-        <div class="card-header">
-            <h2>📅 Calendario Semanal</h2>
-            <button id="generateReportBtn" class="btn-primary">Generar Reporte</button>
-        </div>
-        
-        <div class="week-selector">
-            <button id="prevWeekBtn" class="btn-week-nav">← Semana Anterior</button>
-            <h3 id="currentWeekDisplay">Semana Actual</h3>
-            <button id="nextWeekBtn" class="btn-week-nav">Semana Siguiente →</button>
-        </div>
-        
-        <div class="calendar-grid" id="calendarGrid">
-            <!-- Se llenará dinámicamente -->
-        </div>
-    </section>
+        <!-- PÁGINA 3: CALENDARIO               -->
+        <!-- ================================== -->
+        <div id="page-reportes" class="page-content">
 
-    <!-- Historial de Reportes -->
-    <section class="card">
-        <div class="card-header">
-            <h2>📊 Historial de Reportes</h2>
-            <button id="clearHistoryBtn" class="btn-danger">Limpiar Historial</button>
-        </div>
-        
-        <div class="reports-list" id="reportsList">
-            <!-- Se llenará dinámicamente -->
-        </div>
-    </section>
+            <!-- Calendario mensual -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>📅 Calendario del Equipo</h2>
+                    <div class="cal-nav-controls">
+                        <button id="calPrevMonth" class="btn-week-nav">&#8592;</button>
+                        <span id="calendarMonthDisplay" class="cal-month-label">Cargando...</span>
+                        <button id="calNextMonth"  class="btn-week-nav">&#8594;</button>
+                    </div>
+                </div>
 
-</div>
+                <!-- Leyenda de tipos de evento -->
+                <div class="cal-legend">
+                    <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#3B82F6"></span>Curso</span>
+                    <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#10B981"></span>Día Libre</span>
+                    <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#EF4444"></span>Sick Day</span>
+                    <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#8B5CF6"></span>Vacaciones</span>
+                    <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#F59E0B"></span>Meeting Ext.</span>
+                    <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#6B7280"></span>Otro</span>
+                </div>
+
+                <!-- Grid del calendario -->
+                <div class="calendar-main-grid" id="calendarMainGrid">
+                    <!-- Dinámico -->
+                </div>
+
+                <p class="cal-hint">💡 Haz clic en cualquier día para programar un evento</p>
+            </section>
+
+            <!-- Próximos eventos -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>📌 Próximos Eventos</h2>
+                </div>
+                <div id="upcomingEventsList">
+                    <!-- Dinámico -->
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ================================== -->
+        <!-- PÁGINA 4: IMPORTANTE               -->
+        <!-- ================================== -->
+        <div id="page-importante" class="page-content">
+
+            <section class="card">
+                <div class="card-header">
+                    <h2>📌 Notas Importantes</h2>
+                    <button id="addNoteBtn" class="btn-primary">+ Nueva Nota</button>
+                </div>
+
+                <!-- Filtros -->
+                <div id="noteFilters" class="note-filters">
+                    <!-- Dinámico -->
+                </div>
+
+                <!-- Grid de notas -->
+                <div id="notesGrid" class="notes-grid">
+                    <!-- Dinámico -->
+                </div>
+            </section>
+
+        </div>
 
     </main>
 
     <!-- FOOTER -->
     <footer>
-        <p>Sistema de Gestión de Correos v1.0 | © 2025</p>
+        <p>Sistema de Gestión de Correos v2.0 | © 2025</p>
     </footer>
 
-    <!-- SCRIPT -->
     <script type="module" src="js/app.js"></script>
 </body>
 </html>
