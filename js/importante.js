@@ -7,7 +7,7 @@ const NOTE_COLORS = [
     { key: 'yellow',  bg: '#FEF9C3', border: '#FDE047', label: '🟡' },
     { key: 'blue',    bg: '#DBEAFE', border: '#93C5FD', label: '🔵' },
     { key: 'green',   bg: '#DCFCE7', border: '#86EFAC', label: '🟢' },
-    { key: 'red',     bg: '#f3d2eb', border: '#f074cb', label: '🩷' },
+    { key: 'red',     bg: '#f1c5f1', border: '#eb52b0', label: '🩷' },
     { key: 'purple',  bg: '#EDE9FE', border: '#C4B5FD', label: '🟣' },
     { key: 'orange',  bg: '#FFEDD5', border: '#FDBA74', label: '🟠' },
 ];
@@ -62,27 +62,37 @@ export function initImportanteSection() {
 // ===================================
 // FIREBASE
 // ===================================
+let isSyncingFromFirebase = false;
+
 function loadImportanteData() {
-    // Solo carga una vez al inicio — el estado local es la fuente de verdad
+    // 1. Carga inicial
     loadFieldFromFirebase('importanteNotes', (data) => {
-        if (data) {
-            importanteState.notes = Array.isArray(data) ? data : [];
+        if (Array.isArray(data)) {
+            importanteState.notes = data;
             console.log('✅ Notas cargadas:', importanteState.notes.length);
         }
         renderNotes();
         renderFilters();
     });
+
+    // 2. Escuchar cambios en tiempo real (otros usuarios)
+    listenFieldFromFirebase('importanteNotes', (data) => {
+        if (isSyncingFromFirebase) return;
+        isSyncingFromFirebase = true;
+        if (Array.isArray(data)) {
+            importanteState.notes = data;
+            renderNotes();
+            renderFilters();
+        }
+        setTimeout(() => { isSyncingFromFirebase = false; }, 200);
+    });
 }
 
-let isSaving = false;
-
 function saveImportanteData() {
-    // El estado local ya fue actualizado ANTES de llamar esta función.
-    // Solo persistimos a Firebase sin esperar respuesta ni re-renderizar.
-    if (isSaving) return;
-    isSaving = true;
+    // Marcar como "yo estoy guardando" para ignorar el eco del listener
+    isSyncingFromFirebase = true;
     saveFieldToFirebase('importanteNotes', importanteState.notes);
-    setTimeout(() => { isSaving = false; }, 300);
+    setTimeout(() => { isSyncingFromFirebase = false; }, 500);
 }
 
 // ===================================

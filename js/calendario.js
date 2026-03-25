@@ -18,7 +18,7 @@ export const eventTypes = [
     { key: 'dia_libre',       label: '🌴 Día Libre',        color: '#10B981' },
     { key: 'sick_day',        label: '🤒 Sick Day',         color: '#EF4444' },
     { key: 'vacaciones',      label: '✈️ Vacaciones',       color: '#8B5CF6' },
-    { key: 'meeting_externo', label: '🤝 Meeting ',  color: '#F59E0B' },
+    { key: 'meeting_externo', label: '🤝 Meeting Externo',  color: '#F59E0B' },
     { key: 'otro',            label: '📌 Otro',             color: '#6B7280' }
 ];
 
@@ -125,26 +125,37 @@ function timeToMinutes(t) {
 // ===================================
 // FIREBASE
 // ===================================
+let isSyncingFromFirebase = false;
+
 function loadCalendarData() {
-    // Solo carga una vez al inicio
+    // 1. Carga inicial
     loadFieldFromFirebase('calendarEvents', (data) => {
-        if (data) {
-            calendarState.events = (Array.isArray(data) ? data : []).map(normalizeEvent);
-            console.log('✅ Eventos del calendario cargados:', calendarState.events.length);
+        if (Array.isArray(data)) {
+            calendarState.events = data.map(normalizeEvent);
+            console.log('✅ Eventos cargados:', calendarState.events.length);
         }
         renderCalendar();
         renderUpcomingEvents();
     });
+
+    // 2. Escuchar cambios en tiempo real (otros usuarios)
+    listenFieldFromFirebase('calendarEvents', (data) => {
+        if (isSyncingFromFirebase) return;
+        isSyncingFromFirebase = true;
+        if (Array.isArray(data)) {
+            calendarState.events = data.map(normalizeEvent);
+            renderCalendar();
+            renderUpcomingEvents();
+        }
+        setTimeout(() => { isSyncingFromFirebase = false; }, 200);
+    });
 }
 
-let isSaving = false;
-
 function saveCalendarData() {
-    // Estado local ya actualizado — solo persistimos
-    if (isSaving) return;
-    isSaving = true;
+    // Marcar como "yo estoy guardando" para ignorar el eco del listener
+    isSyncingFromFirebase = true;
     saveFieldToFirebase('calendarEvents', calendarState.events);
-    setTimeout(() => { isSaving = false; }, 300);
+    setTimeout(() => { isSyncingFromFirebase = false; }, 500);
 }
 
 // ===================================
@@ -466,7 +477,7 @@ function openDayModal(dateStr) {
                 <div class="form-group">
                     <label class="form-label">📝 Nota (opcional)</label>
                     <input type="text" id="eventNote" class="modal-input"
-                        placeholder="Ej: Inglés...">
+                        placeholder="Ej: Inglés ...">
                 </div>
 
                 <button id="saveEventBtn" class="btn-confirm" style="width:100%;margin-top:4px">
