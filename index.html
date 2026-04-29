@@ -36,6 +36,10 @@
                     <span class="tab-icon">📌</span>
                     <span class="tab-label">Importante</span>
                 </li>
+                <li class="tab-item" data-tab="links">
+                    <span class="tab-icon">🔗</span>
+                    <span class="tab-label">Links</span>
+                </li>
             </ul>
         </div>
     </nav>
@@ -158,6 +162,11 @@
                     <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#8B5CF6"></span>Vacaciones</span>
                     <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#F59E0B"></span>Meeting Ext.</span>
                     <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#6B7280"></span>Otro</span>
+                    <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#0EA5E9"></span>Minuta</span>
+                    <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#D946EF"></span>Meeting Leader</span>
+                    <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#F97316"></span>Cumpleaños</span>
+                    <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#14B8A6"></span>Custom Statement</span>
+                    <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#DC2626"></span>Termination</span>
                 </div>
 
                 <!-- Grid del calendario -->
@@ -198,6 +207,41 @@
 
                 <!-- Grid de notas -->
                 <div id="notesGrid" class="notes-grid">
+                    <!-- Dinámico -->
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ================================== -->
+        <!-- PÁGINA 5: LINKS                    -->
+        <!-- ================================== -->
+        <div id="page-links" class="page-content">
+
+            <section class="card">
+                <div class="card-header">
+                    <h2>🔗 Links del Equipo</h2>
+                    <button id="addLinkBtn" class="btn-primary">+ Nuevo Link</button>
+                </div>
+
+                <!-- Barra de búsqueda -->
+                <div class="links-search-wrapper">
+                    <span class="links-search-icon">🔍</span>
+                    <input
+                        type="text"
+                        id="linksSearchInput"
+                        class="links-search-input"
+                        placeholder="Buscar por título, URL o descripción...">
+                    <button id="linksClearSearch" class="links-clear-btn" title="Limpiar búsqueda">✕</button>
+                </div>
+
+                <!-- Filtros por categoría -->
+                <div id="linkFilters" class="note-filters">
+                    <!-- Dinámico -->
+                </div>
+
+                <!-- Grid de links -->
+                <div id="linksGrid" class="links-grid">
                     <!-- Dinámico -->
                 </div>
             </section>

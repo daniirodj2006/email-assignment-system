@@ -2,6 +2,8 @@ import { saveToFirebase, listenToFirebase, loadFromFirebase } from './firebase-c
 import { initInfoSection } from './info.js';
 import { initCalendarioSection, getPersonEventsToday, eventTypes } from './calendario.js';
 import { initImportanteSection } from './importante.js';
+import { initLinksSection } from './links.js';
+initLinksSection();
 
 // ===================================
 // CONFIGURACIÓN DEL EQUIPO

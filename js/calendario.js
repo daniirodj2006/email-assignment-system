@@ -14,20 +14,24 @@ const teamMembers = [
 ];
 
 export const eventTypes = [
-    { key: 'curso',           label: '📚 Curso',           color: '#3B82F6' },
-    { key: 'dia_libre',       label: '🌴 Día Libre',        color: '#10B981' },
-    { key: 'sick_day',        label: '🤒 Sick Day',         color: '#EF4444' },
+    { key: 'curso',           label: '📚 Curso',           color: '#3a9e26' },
+    { key: 'sick_day',        label: '🤒 Sick Day',         color: '#ff9e9e' },
     { key: 'vacaciones',      label: '✈️ Vacaciones',       color: '#8B5CF6' },
-    { key: 'meeting_externo', label: '🤝 Meeting Externo',  color: '#F59E0B' },
-    { key: 'otro',            label: '📌 Otro',             color: '#6B7280' }
+    { key: 'meeting_externo', label: '🤝 Meeting ',  color: '#F59E0B' },
+    { key: 'minuta',            label: '📝 Minuta',              color: '#0EA5E9' },
+    { key: 'meeting_leader',    label: '👑 Meeting Leader',      color: '#D946EF' },
+    { key: 'cumpleanos',        label: '🎂 Cumpleaños',          color: '#F97316' },
+    { key: 'custom_statement',  label: '💬 Custom Statements',    color: '#14B8A6' },
+    { key: 'termination',       label: '🚪 Termination',         color: '#DC2626' },
+      { key: 'otro',            label: '📌 Otro',             color: '#6B7280' },
 ];
 
 const DAY_NAMES_SHORT = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 const DAY_NAMES_FULL  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const MONTH_NAMES     = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
                           'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-const HOUR_START = 7;
-const HOUR_END   = 19;
+const HOUR_START = 5;
+const HOUR_END   = 20;
 
 // ===================================
 // ESTADO
