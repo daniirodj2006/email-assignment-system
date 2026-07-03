@@ -7,9 +7,8 @@ const initialBackups = {
     'Alejandra Murillo': { backup1: 'Mónica Murillo', backup2: 'Sofia Calderon' },
     'Alisson Elizondo': { backup1: 'Alejandra Murillo', backup2: '' },
     'Mónica Murillo': { backup1: 'Daniela Rodriguez', backup2: 'Stephanie Gutierrez' },
-    'Stephanie Gutierrez': { backup1: 'Alejandra Murillo', backup2: 'Jose Solano' },
-    'Sofia Calderon': { backup1: 'Jose Solano', backup2: 'Mónica Murillo' },
-    'Jose Solano': { backup1: 'Stephanie Gutierrez', backup2: 'Daniela Rodriguez' },
+    'Stephanie Gutierrez': { backup1: 'Alejandra Murillo', backup2: 'Daniela Rodriguez' },
+    'Sofia Calderon': { backup1: 'Stephanie Gutierrez', backup2: 'Mónica Murillo' },
     'Daniela Rodriguez': { backup1: 'Sofia Calderon', backup2: 'Alejandra Murillo' }
 };
 
@@ -22,7 +21,6 @@ const initialLunchTimes = {
     'Mónica Murillo': '11:00 - 12:00',
     'Stephanie Gutierrez': '1:00 - 2:00',
     'Sofia Calderon': '12:00 - 1:00',
-    'Jose Solano': '2:00 - 3:00',
     'Daniela Rodriguez': '1:00 - 2:00'
 };
 
@@ -42,7 +40,6 @@ const teamMembers = [
     'Mónica Murillo',
     'Stephanie Gutierrez',
     'Sofia Calderon',
-    'Jose Solano',
     'Daniela Rodriguez'
 ];
 

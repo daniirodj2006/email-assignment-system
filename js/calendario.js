@@ -9,7 +9,6 @@ const teamMembers = [
     'Mónica Murillo',
     'Stephanie Gutierrez',
     'Sofia Calderon',
-    'Jose Solano',
     'Daniela Rodriguez'
 ];
 
