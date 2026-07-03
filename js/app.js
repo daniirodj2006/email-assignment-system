@@ -9,14 +9,13 @@ initLinksSection();
 // CONFIGURACIÓN DEL EQUIPO
 // ===================================
 const teamMembers = [
-    'Moni', 'Ale', 'Jose', 'Steph', 'Dani', 'Sofi', 'Ali'
+    'Moni', 'Ale', 'Steph', 'Dani', 'Sofi', 'Ali'
 ];
 
 // Mapa de nombre corto → nombre completo (para cruzar con el calendario)
 const nameMap = {
     'Moni':  'Mónica Murillo',
     'Ale':   'Alejandra Murillo',
-    'Jose':  'Jose Solano',
     'Steph': 'Stephanie Gutierrez',
     'Dani':  'Daniela Rodriguez',
     'Sofi':  'Sofia Calderon',
