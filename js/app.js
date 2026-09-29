@@ -19,7 +19,9 @@ const nameMap = {
     'Steph': 'Stephanie Gutierrez',
     'Dani':  'Daniela Rodriguez',
     'Sofi':  'Sofia Calderon',
-    'Ali':   'Alisson Elizondo'
+    'Ali':   'Alisson Elizondo',
+    'Diana':   'Diana Alfaro'
+
 };
 
 const weekDays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
