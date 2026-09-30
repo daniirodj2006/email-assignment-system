@@ -40,7 +40,8 @@ const teamMembers = [
     'Mónica Murillo',
     'Stephanie Gutierrez',
     'Sofia Calderon',
-    'Daniela Rodriguez'
+    'Daniela Rodriguez',
+    'Diana Alfaro'
 ];
 
 let isLoadingFromFirebase = false;

@@ -9,7 +9,8 @@ const teamMembers = [
     'Mónica Murillo',
     'Stephanie Gutierrez',
     'Sofia Calderon',
-    'Daniela Rodriguez'
+    'Daniela Rodriguez',
+    'Diana Alfaro'
 ];
 
 export const eventTypes = [
@@ -23,6 +24,8 @@ export const eventTypes = [
     { key: 'custom_statement',  label: '💬 Custom Statements',    color: '#14B8A6' },
     { key: 'termination',       label: '🚪 Termination',         color: '#DC2626' },
       { key: 'otro',            label: '📌 Otro',             color: '#6B7280' },
+      { key: 'shipping',          label: '🚚 Shipping',            color: '#2563EB' },
+{ key: 'ous_list',          label: '📋 OUS List',            color: '#7C3AED' },
 ];
 
 const DAY_NAMES_SHORT = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
