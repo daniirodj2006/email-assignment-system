@@ -25,7 +25,7 @@ export const eventTypes = [
     { key: 'termination',       label: '🚪 Termination',         color: '#DC2626' },
       { key: 'otro',            label: '📌 Otro',             color: '#6B7280' },
       { key: 'shipping',          label: '🚚 Shipping',            color: '#2563EB' },
-{ key: 'ous_list',          label: '📋 OUS List',            color: '#7C3AED' },
+{ key: 'ous_list',          label: '📋 OUS List',            color: '#dfd877' },
 ];
 
 const DAY_NAMES_SHORT = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
